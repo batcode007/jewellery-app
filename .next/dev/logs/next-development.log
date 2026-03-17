@@ -1,0 +1,39 @@
+[00:00:00.640] Server  LOG     ✓ Ready in 485ms
+[00:00:01.712] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:02.765] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:00:02.765] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:00:48.175] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[00:00:50.155] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:00:52.642] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:04:02.231] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:04:02.232] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:04:02.887] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:04:02.887] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:04:22.352] Server  LOG     ✓ Compiled in 30ms
+[00:09:25.613] Server  LOG       Reload env: .env.local
+[00:09:42.752] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:09:42.752] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:09:43.050] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:09:43.050] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:14:07.530] Server  LOG       Reload env: .env.local
+[00:17:09.434] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:17:09.891] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:17:28.617] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:17:28.820] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:23:27.396] Server  WARN    ⚠ Fast Refresh had to perform a full reload when ./src/context/AuthContext.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[00:23:27.465] Server  LOG     ✓ Compiled in 49ms
+[00:23:27.699] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:23:29.156] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:25:24.100] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[00:27:17.082] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.profiles' in the schema cache"}
+[00:27:20.270] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.profiles' in the schema cache"}
+[00:27:21.356] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.profiles' in the schema cache"}
+[00:27:34.289] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.profiles' in the schema cache"}
+[00:27:38.170] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.profiles' in the schema cache"}
+[00:28:03.448] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:28:03.671] Browser ERROR   unhandledRejection: {"code":"PGRST205","details":null,"hint":null,"message":"Could not find the table 'public.items' in the schema cache"}
+[00:30:48.786] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:30:52.823] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:31:28.933] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[00:33:39.275] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:34:11.993] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
