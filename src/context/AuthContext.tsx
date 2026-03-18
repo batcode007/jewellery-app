@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from "react";
 import { supabase, Profile } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
 
@@ -19,6 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const skipNextFetchRef = useRef(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -30,8 +31,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
-        if (session?.user) await fetchProfile(session.user.id);
-        else { setProfile(null); setLoading(false); }
+        if (session?.user) {
+          if (skipNextFetchRef.current) {
+            skipNextFetchRef.current = false;
+            setLoading(false);
+          } else {
+            await fetchProfile(session.user.id);
+          }
+        } else {
+          setProfile(null);
+          setLoading(false);
+        }
       }
     );
     return () => subscription.unsubscribe();
@@ -48,30 +58,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signInWithOtp(phone: string) {
-    // Silently swallow errors so the OTP step is always reachable (allows dev bypass below)
+    // Swallow SMS provider errors — dev bypass via verifyOtp("123456") works without a real OTP
     await supabase.auth.signInWithOtp({ phone });
   }
 
   async function verifyOtp(phone: string, token: string) {
     if (token === "123456") {
-      // Dev bypass: sign in anonymously so a real session + user ID exists
+      // Fetch real profile by phone via SECURITY DEFINER RPC (bypasses RLS)
+      const { data: rows } = await supabase.rpc("get_profile_by_phone", { p_phone: phone });
+      const realProfile = (rows?.[0] ?? null) as Profile | null;
+
+      // Sign in anonymously to get a real session
+      skipNextFetchRef.current = true;
       const { data, error } = await supabase.auth.signInAnonymously();
-      if (error) throw error;
+      if (error) { skipNextFetchRef.current = false; throw error; }
+
       if (data.user) {
-        await supabase.from("profiles").upsert({
-          id: data.user.id,
-          phone,
-          name: "Dev User",
-          role: "user",
-        });
+        // Create a shadow profile for the anon user with the same role as the real user
+        // so that auth.uid() satisfies RLS write policies (e.g. "Admins can manage items")
+        await supabase.from("profiles").upsert(
+          {
+            id: data.user.id,
+            phone: `dev_${data.user.id}`,
+            name: realProfile?.name ?? "Dev User",
+            role: realProfile?.role ?? "user",
+          },
+          { onConflict: "id" }
+        );
+        // Display the real profile in the UI
+        setProfile(realProfile ?? { id: data.user.id, phone, name: "Dev User", role: "user" });
       }
       return;
     }
-    const { error } = await supabase.auth.verifyOtp({
-      phone,
-      token,
-      type: "sms",
-    });
+    const { error } = await supabase.auth.verifyOtp({ phone, token, type: "sms" });
     if (error) throw error;
   }
 

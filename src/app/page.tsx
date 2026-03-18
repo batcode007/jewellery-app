@@ -66,7 +66,6 @@ export default function HomePage() {
               { label: "Gold 24K", value: `₹${rates.gold_24k?.toLocaleString("en-IN")}/g`, change: rates.gold_change },
               { label: "Gold 22K", value: `₹${rates.gold_22k?.toLocaleString("en-IN")}/g` },
               { label: "Silver", value: `₹${rates.silver}/g`, change: rates.silver_change },
-              { label: "Platinum", value: `₹${rates.platinum?.toLocaleString("en-IN")}/g` },
             ].map((r) => (
               <div key={r.label} className="bg-white rounded-xl p-4 border border-gray-100 min-w-[150px] flex-1">
                 <div className="text-xs text-gray-400 font-medium mb-1">{r.label}</div>

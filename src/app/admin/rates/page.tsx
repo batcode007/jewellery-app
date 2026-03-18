@@ -5,7 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function AdminRates() {
   const { profile } = useAuth();
-  const [form, setForm] = useState({ gold_24k: "", gold_22k: "", gold_18k: "", silver: "", platinum: "", gold_change: "", silver_change: "" });
+  const [form, setForm] = useState({ gold_24k: "", gold_22k: "", gold_18k: "", silver: "", gold_change: "", silver_change: "" });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -16,7 +16,6 @@ export default function AdminRates() {
         gold_22k: r.gold_22k?.toString() || "",
         gold_18k: r.gold_18k?.toString() || "",
         silver: r.silver?.toString() || "",
-        platinum: r.platinum?.toString() || "",
         gold_change: r.gold_change?.toString() || "",
         silver_change: r.silver_change?.toString() || "",
       });
@@ -31,7 +30,6 @@ export default function AdminRates() {
         gold_22k: parseFloat(form.gold_22k),
         gold_18k: parseFloat(form.gold_18k),
         silver: parseFloat(form.silver),
-        platinum: parseFloat(form.platinum),
         gold_change: parseFloat(form.gold_change),
         silver_change: parseFloat(form.silver_change),
         updated_by: profile?.id || "",
@@ -63,7 +61,6 @@ export default function AdminRates() {
           <Field label="Gold 22K (₹/g)" field="gold_22k" />
           <Field label="Gold 18K (₹/g)" field="gold_18k" />
           <Field label="Silver (₹/g)" field="silver" />
-          <Field label="Platinum (₹/g)" field="platinum" />
           <Field label="Gold Change (₹)" field="gold_change" />
           <Field label="Silver Change (₹)" field="silver_change" />
         </div>

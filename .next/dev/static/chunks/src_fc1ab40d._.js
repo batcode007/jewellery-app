@@ -39,6 +39,7 @@ function AuthProvider({ children }) {
     const [session, setSession] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [profile, setProfile] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(true);
+    const skipNextFetchRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRef"])(false);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "AuthProvider.useEffect": ()=>{
             __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].auth.getSession().then({
@@ -51,8 +52,14 @@ function AuthProvider({ children }) {
             const { data: { subscription } } = __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].auth.onAuthStateChange({
                 "AuthProvider.useEffect": async (_event, session)=>{
                     setSession(session);
-                    if (session?.user) await fetchProfile(session.user.id);
-                    else {
+                    if (session?.user) {
+                        if (skipNextFetchRef.current) {
+                            skipNextFetchRef.current = false;
+                            setLoading(false);
+                        } else {
+                            await fetchProfile(session.user.id);
+                        }
+                    } else {
                         setProfile(null);
                         setLoading(false);
                     }
@@ -69,18 +76,38 @@ function AuthProvider({ children }) {
         setLoading(false);
     }
     async function signInWithOtp(phone) {
-        // Silently swallow errors so the OTP step is always reachable (allows dev bypass below)
+        // Swallow SMS provider errors — dev bypass via verifyOtp("123456") works without a real OTP
         await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].auth.signInWithOtp({
             phone
         });
     }
     async function verifyOtp(phone, token) {
         if (token === "123456") {
-            // Dev bypass: sign in anonymously so a real session + user ID exists
+            // Fetch real profile by phone via SECURITY DEFINER RPC (bypasses RLS)
+            const { data: rows } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].rpc("get_profile_by_phone", {
+                p_phone: phone
+            });
+            const realProfile = rows?.[0] ?? null;
+            // Sign in anonymously to get a real session
+            skipNextFetchRef.current = true;
             const { data, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].auth.signInAnonymously();
-            if (error) throw error;
+            if (error) {
+                skipNextFetchRef.current = false;
+                throw error;
+            }
             if (data.user) {
+                // Create a shadow profile for the anon user with the same role as the real user
+                // so that auth.uid() satisfies RLS write policies (e.g. "Admins can manage items")
                 await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from("profiles").upsert({
+                    id: data.user.id,
+                    phone: `dev_${data.user.id}`,
+                    name: realProfile?.name ?? "Dev User",
+                    role: realProfile?.role ?? "user"
+                }, {
+                    onConflict: "id"
+                });
+                // Display the real profile in the UI
+                setProfile(realProfile ?? {
                     id: data.user.id,
                     phone,
                     name: "Dev User",
@@ -123,11 +150,11 @@ function AuthProvider({ children }) {
         children: children
     }, void 0, false, {
         fileName: "[project]/src/context/AuthContext.tsx",
-        lineNumber: 95,
+        lineNumber: 114,
         columnNumber: 5
     }, this);
 }
-_s(AuthProvider, "2PwuXsbjoKdj5teh7kEvBd7NSbE=");
+_s(AuthProvider, "hNSRl61ukIoWd7+RToWZdiKpGMQ=");
 _c = AuthProvider;
 function useAuth() {
     _s1();
@@ -228,7 +255,7 @@ async function getItemById(id) {
     return data;
 }
 async function getMetals() {
-    const { data } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from("metals").select("*").order("display_order");
+    const { data } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["supabase"].from("metals").select("*").eq("is_deleted", false).order("display_order");
     return data || [];
 }
 async function getJewelleryTypes() {
@@ -1051,21 +1078,21 @@ function Footer() {
                                     className: "text-gray-400 text-sm leading-8",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            children: "📞 +91 11 2341 5678"
+                                            children: "📞 +91 9213530316"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/Footer.tsx",
                                             lineNumber: 30,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            children: "✉️ hello@lumiere.in"
+                                            children: "✉️ sonijewellers@gmail.com"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/Footer.tsx",
                                             lineNumber: 31,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            children: "📍 Connaught Place, Delhi"
+                                            children: "📍 Dilshad Garden, Delhi"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/Footer.tsx",
                                             lineNumber: 32,

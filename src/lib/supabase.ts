@@ -58,7 +58,6 @@ export type DailyRate = {
   gold_22k: number;
   gold_18k: number;
   silver: number;
-  platinum: number;
   gold_change: number;
   silver_change: number;
   rate_date: string;

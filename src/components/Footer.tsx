@@ -27,9 +27,9 @@ export default function Footer() {
           <div className="min-w-[140px]">
             <h4 className="text-gold text-xs font-semibold tracking-wider uppercase mb-3">Contact</h4>
             <div className="text-gray-400 text-sm leading-8">
-              <div>📞 +91 11 2341 5678</div>
-              <div>✉️ hello@lumiere.in</div>
-              <div>📍 Connaught Place, Delhi</div>
+              <div>📞 +91 9213530316</div>
+              <div>✉️ sonijewellers@gmail.com</div>
+              <div>📍 Dilshad Garden, Delhi</div>
             </div>
           </div>
         </div>

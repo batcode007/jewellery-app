@@ -1,8 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 const TABS = [
   { href: "/admin", label: "Catalogue", icon: "📦" },
@@ -12,37 +11,29 @@ const TABS = [
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { profile, signOut } = useAuth();
+  const { profile, loading, signOut } = useAuth();
   const pathname = usePathname();
-  const router = useRouter();
-  const [adminPw, setAdminPw] = useState("");
-  const [authed, setAuthed] = useState(false);
 
-  // Simple admin gate — replace with role check in production
-  const isAdmin = profile?.role === "admin" || authed;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-navy flex items-center justify-center font-sans">
+        <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
-  if (!isAdmin) {
+  if (profile?.role !== "admin") {
     return (
       <div className="min-h-screen bg-navy flex items-center justify-center p-4 font-sans">
         <div className="bg-white rounded-2xl p-10 max-w-sm w-full text-center">
-          <div className="text-4xl mb-3">👑</div>
-          <h2 className="text-xl font-bold text-navy mb-1">Admin Portal</h2>
-          <p className="text-gray-400 text-sm mb-6">Enter admin credentials</p>
-          <input
-            type="password"
-            placeholder="Admin Password"
-            value={adminPw}
-            onChange={(e) => setAdminPw(e.target.value)}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 mb-4 outline-none focus:border-gold"
-          />
-          <button
-            onClick={() => { if (adminPw === "admin123") setAuthed(true); }}
-            className="w-full bg-gradient-to-r from-gold to-gold-dark text-navy font-semibold py-3 rounded-lg"
-          >
-            Sign In
-          </button>
-          <p className="text-[11px] text-gray-400 mt-3">Demo password: admin123</p>
-          <Link href="/" className="text-gold-dark text-sm mt-4 inline-block">← Back to Store</Link>
+          <div className="text-4xl mb-3">🔒</div>
+          <h2 className="text-xl font-bold text-navy mb-1">Admin Access Only</h2>
+          <p className="text-gray-400 text-sm mb-6">
+            {profile ? "Your account doesn't have admin privileges." : "Please log in with an admin account."}
+          </p>
+          <Link href="/" className="block w-full bg-gradient-to-r from-gold to-gold-dark text-navy font-semibold py-3 rounded-lg text-sm">
+            ← Back to Store
+          </Link>
         </div>
       </div>
     );
@@ -50,20 +41,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-      {/* Admin header */}
       <div className="bg-navy px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-gold">👑</span>
           <span className="text-white font-bold">Admin Panel</span>
         </div>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
+          <span className="text-gray-400 text-xs">{profile.name || profile.phone}</span>
           <Link href="/" className="text-gray-400 text-sm hover:text-white">View Store</Link>
-          <button onClick={() => { setAuthed(false); router.push("/"); }} className="text-red-400 text-sm">Logout</button>
+          <button onClick={signOut} className="text-red-400 text-sm">Logout</button>
         </div>
       </div>
 
       <div className="flex">
-        {/* Sidebar */}
         <div className="w-52 bg-white min-h-[calc(100vh-56px)] border-r border-gray-200 py-6">
           {TABS.map((t) => (
             <Link
@@ -79,8 +69,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
           ))}
         </div>
-
-        {/* Content */}
         <div className="flex-1 p-6">{children}</div>
       </div>
     </div>

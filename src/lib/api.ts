@@ -83,7 +83,7 @@ export async function getItemById(id: string) {
 
 // ---- FILTERS (metadata) ----
 export async function getMetals() {
-  const { data } = await supabase.from("metals").select("*").order("display_order");
+  const { data } = await supabase.from("metals").select("*").eq("is_deleted",false).order("display_order");
   return data || [];
 }
 export async function getJewelleryTypes() {
