@@ -27,7 +27,7 @@ export default function StoresPage() {
           <div key={s.id} className="bg-white rounded-xl p-5 border border-gray-200">
             <h3 className="font-semibold text-navy mb-3">{s.name}</h3>
             <div className="text-sm text-gray-500 mb-2 flex gap-2">📍 {s.address}</div>
-            <div className="text-sm text-gray-500 mb-2 flex gap-2">📞 {s.phone}</div>
+            {s.phone && <div className="text-sm text-gray-500 mb-2 flex gap-2">📞 {s.phone}</div>}
             <div className="text-sm text-gray-500 mb-4 flex gap-2">🕐 {s.hours}</div>
             <div className="flex gap-2">
               <a
@@ -37,9 +37,11 @@ export default function StoresPage() {
               >
                 Get Directions
               </a>
-              <a href={`tel:${s.phone}`} className="px-4 py-2 border border-gold text-gold-dark rounded-lg text-sm font-semibold">
-                Call
-              </a>
+              {s.phone && (
+                <a href={`tel:${s.phone}`} className="px-4 py-2 border border-gold text-gold-dark rounded-lg text-sm font-semibold">
+                  Call
+                </a>
+              )}
             </div>
           </div>
         ))}

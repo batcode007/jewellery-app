@@ -37,6 +37,7 @@ export type GoldScheme = {
   user_id: string;
   monthly_amount: number;
   total_months: number;
+  scheme_type: "12+1" | "20+2";
   status: string;
   start_date: string;
   total_value: number;

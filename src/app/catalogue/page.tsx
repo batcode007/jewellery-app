@@ -38,14 +38,20 @@ function CatalogueContent() {
   // Fetch items when filters change
   const fetchItems = useCallback(async () => {
     setLoading(true);
-    const data = await getItems({
-      metals: selMetals.length ? selMetals : undefined,
-      types: selTypes.length ? selTypes : undefined,
-      collections: selCollections.length ? selCollections : undefined,
-      search: search || undefined,
-    });
-    setItems(data);
-    setLoading(false);
+    try {
+      const data = await getItems({
+        metals: selMetals.length ? selMetals : undefined,
+        types: selTypes.length ? selTypes : undefined,
+        collections: selCollections.length ? selCollections : undefined,
+        search: search || undefined,
+      });
+      setItems(data);
+    } catch (e) {
+      console.error("[catalogue] getItems failed:", e);
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
   }, [selMetals, selTypes, selCollections, search]);
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
@@ -56,7 +62,7 @@ function CatalogueContent() {
 
   const activeCount = selMetals.length + selTypes.length + selCollections.length;
 
-  const Badge = ({ slug, name, active, onToggle }: any) => (
+  const Badge = ({ name, active, onToggle }: any) => (
     <button
       onClick={onToggle}
       className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${

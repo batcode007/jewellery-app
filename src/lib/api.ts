@@ -130,13 +130,36 @@ export async function getUserScheme(userId: string) {
   return data as GoldScheme | null;
 }
 
-export async function enrollScheme(userId: string, monthlyAmount: number) {
+export async function enrollScheme(userId: string, monthlyAmount: number, schemeType: "12+1" | "20+2" = "12+1") {
   const { data, error } = await supabase.rpc("enroll_gold_scheme", {
     p_user_id: userId,
     p_monthly_amount: monthlyAmount,
+    p_scheme_type: schemeType,
   });
   if (error) throw error;
   return data;
+}
+
+export async function adminEnrollUserScheme(phone: string, monthlyAmount: number, schemeType: "12+1" | "20+2") {
+  const { data: rows } = await supabase.rpc("get_profile_by_phone", { p_phone: phone });
+  const user = rows?.[0];
+  if (!user) throw new Error("No user found with that phone number");
+  const { data, error } = await supabase.rpc("enroll_gold_scheme", {
+    p_user_id: user.id,
+    p_monthly_amount: monthlyAmount,
+    p_scheme_type: schemeType,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function adminRecordPayment(paymentId: string, paidDate: string, amount: number) {
+  const { error } = await supabase.rpc("admin_record_payment", {
+    p_payment_id: paymentId,
+    p_paid_date: paidDate,
+    p_amount: amount,
+  });
+  if (error) throw error;
 }
 
 // ---- FEEDBACK ----
@@ -152,6 +175,33 @@ export async function submitFeedback(payload: {
 }
 
 // ---- ADMIN: Items ----
+export async function adminUpdateItem(id: string, item: {
+  name: string;
+  description?: string;
+  metal_id: number;
+  jewellery_type_id: number;
+  weight: string;
+  weight_grams?: number;
+  purity: string;
+  price: number;
+  price_display: string;
+  is_featured?: boolean;
+  collection_ids?: number[];
+}) {
+  const { collection_ids, ...itemData } = item;
+  const { error } = await supabase.from("items").update(itemData).eq("id", id);
+  if (error) throw error;
+
+  if (collection_ids !== undefined) {
+    await supabase.from("item_collections").delete().eq("item_id", id);
+    if (collection_ids.length) {
+      await supabase.from("item_collections").insert(
+        collection_ids.map((cid) => ({ item_id: id, collection_id: cid }))
+      );
+    }
+  }
+}
+
 export async function adminCreateItem(item: {
   name: string;
   description?: string;
