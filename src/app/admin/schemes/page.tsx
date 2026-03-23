@@ -34,7 +34,7 @@ export default function AdminSchemes() {
     setEnrolling(true);
     try {
       await adminEnrollUserScheme(
-        enrollForm.phone,
+        `+91${enrollForm.phone}`,
         parseFloat(enrollForm.monthly_amount),
         enrollForm.scheme_type
       );
@@ -207,12 +207,16 @@ export default function AdminSchemes() {
             <div className="grid gap-4">
               <div>
                 <label className="text-xs font-medium text-gray-600 mb-1 block">Phone Number</label>
-                <input
-                  placeholder="+91XXXXXXXXXX"
-                  value={enrollForm.phone}
-                  onChange={(e) => setEnrollForm({ ...enrollForm, phone: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:border-gold"
-                />
+                <div className="flex gap-2">
+                  <span className="px-3 py-2.5 bg-gray-100 rounded-lg text-sm text-gray-500 font-medium">+91</span>
+                  <input
+                    type="tel"
+                    placeholder="XXXXXXXXXX"
+                    value={enrollForm.phone}
+                    onChange={(e) => setEnrollForm({ ...enrollForm, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })}
+                    className="flex-1 px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:border-gold"
+                  />
+                </div>
               </div>
               <div>
                 <label className="text-xs font-medium text-gray-600 mb-2 block">Scheme Type</label>
@@ -262,7 +266,7 @@ export default function AdminSchemes() {
               </button>
               <button
                 onClick={handleEnroll}
-                disabled={!enrollForm.phone || !enrollForm.monthly_amount || enrolling}
+                disabled={enrollForm.phone.length !== 10 || !enrollForm.monthly_amount || enrolling}
                 className="flex-1 py-2.5 rounded-lg bg-gradient-to-r from-gold to-gold-dark text-navy font-semibold text-sm disabled:opacity-40"
               >
                 {enrolling ? "Enrolling..." : "Enroll"}

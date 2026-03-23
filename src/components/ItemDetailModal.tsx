@@ -66,7 +66,13 @@ export default function ItemDetailModal({
 
             <div className="text-2xl font-bold text-gold-dark mb-4">{item.price_display}</div>
 
-            <button className="w-full bg-gradient-to-r from-gold to-gold-dark text-navy font-semibold py-3 rounded-lg">
+            <button
+              className="w-full bg-gradient-to-r from-gold to-gold-dark text-navy font-semibold py-3 rounded-lg"
+              onClick={() => {
+                const msg = encodeURIComponent(`Hi, I'm interested in ${item.name}. Can you share more details?`);
+                window.open(`https://wa.me/919213530316?text=${msg}`, '_blank');
+              }}
+            >
               📞 Enquire Now
             </button>
             <p className="text-[11px] text-gray-400 mt-3">* Price may vary based on current gold rate. Visit store for final pricing.</p>

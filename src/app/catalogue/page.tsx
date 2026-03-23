@@ -12,10 +12,18 @@ function CatalogueContent() {
   const [metals, setMetals] = useState<any[]>([]);
   const [types, setTypes] = useState<any[]>([]);
   const [collections, setCollections] = useState<any[]>([]);
-  const [selMetals, setSelMetals] = useState<string[]>([]);
+  // Initialise directly from URL params — avoids a second render/fetch cycle
+  const [selMetals, setSelMetals] = useState<string[]>(() => {
+    const m = searchParams.get("metal");
+    return m ? [m] : [];
+  });
   const [selTypes, setSelTypes] = useState<string[]>([]);
-  const [selCollections, setSelCollections] = useState<string[]>([]);
+  const [selCollections, setSelCollections] = useState<string[]>(() => {
+    const c = searchParams.get("collection");
+    return c ? [c] : [];
+  });
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -27,13 +35,11 @@ function CatalogueContent() {
     );
   }, []);
 
-  // Read URL params for initial filters
+  // Debounce search input
   useEffect(() => {
-    const m = searchParams.get("metal");
-    const c = searchParams.get("collection");
-    if (m) setSelMetals([m]);
-    if (c) setSelCollections([c]);
-  }, [searchParams]);
+    const t = setTimeout(() => setDebouncedSearch(search), 400);
+    return () => clearTimeout(t);
+  }, [search]);
 
   // Fetch items when filters change
   const fetchItems = useCallback(async () => {
@@ -43,7 +49,7 @@ function CatalogueContent() {
         metals: selMetals.length ? selMetals : undefined,
         types: selTypes.length ? selTypes : undefined,
         collections: selCollections.length ? selCollections : undefined,
-        search: search || undefined,
+        search: debouncedSearch || undefined,
       });
       setItems(data);
     } catch (e) {
@@ -52,7 +58,7 @@ function CatalogueContent() {
     } finally {
       setLoading(false);
     }
-  }, [selMetals, selTypes, selCollections, search]);
+  }, [selMetals, selTypes, selCollections, debouncedSearch]);
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
 
@@ -146,11 +152,19 @@ function CatalogueContent() {
       {/* Active filter pills */}
       {activeCount > 0 && !showFilters && (
         <div className="flex flex-wrap gap-2 mb-4">
-          {[...selMetals, ...selTypes, ...selCollections].map((f) => (
-            <span key={f} className="bg-gold/10 text-gold-dark text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
-              {f} <button onClick={() => { setSelMetals((p) => p.filter((v) => v !== f)); setSelTypes((p) => p.filter((v) => v !== f)); setSelCollections((p) => p.filter((v) => v !== f)); }}>✕</button>
-            </span>
-          ))}
+          {[...selMetals, ...selTypes, ...selCollections].map((f) => {
+            const displayName =
+              metals.find((m) => m.slug === f)?.name ||
+              types.find((t) => t.slug === f)?.name ||
+              collections.find((c) => c.slug === f)?.name ||
+              f;
+            return (
+              <span key={f} className="bg-gold/10 text-gold-dark text-xs font-medium px-3 py-1 rounded-full flex items-center gap-1">
+                {displayName}
+                <button onClick={() => { setSelMetals((p) => p.filter((v) => v !== f)); setSelTypes((p) => p.filter((v) => v !== f)); setSelCollections((p) => p.filter((v) => v !== f)); }}>✕</button>
+              </span>
+            );
+          })}
         </div>
       )}
 

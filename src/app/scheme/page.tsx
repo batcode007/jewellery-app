@@ -29,15 +29,28 @@ export default function SchemePage() {
   const cfg = selectedType ? SCHEME_CFG[selectedType] : null;
 
   async function handleEnroll() {
-    if (!profile || amt < 500 || !selectedType) return;
+    if (!profile || amt < 500 || !selectedType || !cfg) return;
     setLoading(true);
     try {
       await enrollScheme(profile.id, amt, selectedType);
       const data = await getUserScheme(profile.id);
       setScheme(data);
       setShowConfirm(false);
-    } catch {
-      alert("Failed to enroll. Please try again.");
+
+      const msg = [
+        `Hi Soni Jewellers! I've just enrolled in the Gold Savings Scheme. 🎉`,
+        ``,
+        `Name: ${profile.name || "—"}`,
+        `Phone: ${profile.phone || "—"}`,
+        `Scheme: ${selectedType}`,
+        `Monthly Amount: ₹${amt.toLocaleString("en-IN")}`,
+        `Total Value: ₹${(amt * cfg.total).toLocaleString("en-IN")}`,
+      ].join("\n");
+      window.open(`https://wa.me/919213530316?text=${encodeURIComponent(msg)}`, "_blank");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : JSON.stringify(err);
+      console.error("enrollScheme error:", err);
+      alert(`Failed to enroll: ${msg}`);
     }
     setLoading(false);
   }
@@ -136,7 +149,8 @@ export default function SchemePage() {
   return (
     <div className="py-5 pb-10 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold text-navy mb-1">Gold Savings Scheme</h1>
-      <p className="text-gray-500 text-sm mb-6">A smart way to save for your dream jewellery</p>
+      <p className="text-gray-500 text-sm">A smart way to save for your dream jewellery</p>
+      <p className="text-gold-dark text-sm font-medium mb-6">Start with as small an amount as one thousand</p>
 
       {!profile ? (
         <div className="bg-white rounded-xl p-10 border border-gray-200 text-center">
