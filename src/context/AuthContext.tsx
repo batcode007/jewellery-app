@@ -68,25 +68,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data: rows } = await supabase.rpc("get_profile_by_phone", { p_phone: phone });
       const realProfile = (rows?.[0] ?? null) as Profile | null;
 
-      // Sign in anonymously to get a real session
+      // Reuse existing session if one is already active — avoids creating a new anon user
+      const { data: { session: existing } } = await supabase.auth.getSession();
+      if (existing?.user) {
+        const mergedProfile: Profile = {
+          id: existing.user.id,
+          phone: realProfile?.phone ?? phone,
+          name: realProfile?.name ?? "Dev User",
+          role: realProfile?.role ?? "user",
+        };
+
+        await supabase.from("profiles").upsert(mergedProfile, { onConflict: "id" });
+        setSession(existing);
+        setProfile(mergedProfile);
+        setLoading(false);
+        return;
+      }
+
+      // No active session — create one anon user for this dev session
       skipNextFetchRef.current = true;
       const { data, error } = await supabase.auth.signInAnonymously();
       if (error) { skipNextFetchRef.current = false; throw error; }
 
       if (data.user) {
-        // Create a shadow profile for the anon user with the same role as the real user
-        // so that auth.uid() satisfies RLS write policies (e.g. "Admins can manage items")
-        await supabase.from("profiles").upsert(
-          {
-            id: data.user.id,
-            phone: `dev_${data.user.id}`,
-            name: realProfile?.name ?? "Dev User",
-            role: realProfile?.role ?? "user",
-          },
-          { onConflict: "id" }
-        );
-        // Display the real profile in the UI
-        setProfile(realProfile ?? { id: data.user.id, phone, name: "Dev User", role: "user" });
+        const mergedProfile: Profile = {
+          id: data.user.id,
+          phone: realProfile?.phone ?? phone,
+          name: realProfile?.name ?? "Dev User",
+          role: realProfile?.role ?? "user",
+        };
+
+        await supabase.from("profiles").upsert(mergedProfile, { onConflict: "id" });
+        setProfile(mergedProfile);
       }
       return;
     }

@@ -5,6 +5,12 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Auth-free client for public read queries (catalogue, rates, stores, metadata).
+// This avoids the Supabase refresh-lock hang when a stale session is in localStorage.
+export const supabasePublic = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+});
+
 export type Profile = {
   id: string;
   phone: string;
@@ -29,7 +35,7 @@ export type Item = {
   metals?: { id: number; name: string; slug: string };
   jewellery_types?: { id: number; name: string; slug: string };
   item_collections?: { collections: { id: number; name: string; slug: string } }[];
-  item_images?: { id: string; url: string; is_primary: boolean; display_order: number }[];
+  item_images?: { id: string; url: string; is_primary: boolean; display_order: number; frame_type: "gallery" | "360" }[];
 };
 
 export type GoldScheme = {

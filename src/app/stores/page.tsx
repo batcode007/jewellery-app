@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 const STORE = {
   name: "Soni Jewellers",
   address: "Dilshad Garden, Delhi",

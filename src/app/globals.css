@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", system-ui, sans-serif;
+  --font-sans: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
 
   --color-gold: #D4AF37;
   --color-gold-light: #F5E6B8;
@@ -10,10 +11,44 @@
   --color-navy-light: #16213E;
   --color-cream: #FFF9F0;
   --color-rose: #F8E8E0;
+  --color-ink: #2b2419;
+  --color-sand: #f3ead8;
+  --color-wine: #5d2a2a;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(212, 175, 55, 0.16), transparent 28%),
+    radial-gradient(circle at top right, rgba(93, 42, 42, 0.12), transparent 24%),
+    linear-gradient(180deg, #fffdf8 0%, #fff8ef 48%, #f9f0e2 100%);
+  color: var(--color-ink);
+}
+
+a,
+button,
+input,
+textarea,
+select {
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease,
+    opacity 180ms ease;
+}
+
+::selection {
+  background: rgba(212, 175, 55, 0.26);
+  color: var(--color-navy);
 }
 
 ::-webkit-scrollbar {
@@ -23,4 +58,57 @@ html {
 ::-webkit-scrollbar-thumb {
   background: #D4AF37;
   border-radius: 3px;
+}
+
+.font-display {
+  font-family: var(--font-display), serif;
+}
+
+.luxury-panel {
+  background: rgba(255, 252, 246, 0.82);
+  border: 1px solid rgba(134, 108, 37, 0.14);
+  box-shadow:
+    0 16px 40px rgba(32, 24, 12, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(18px);
+}
+
+.dark-panel {
+  background:
+    linear-gradient(180deg, rgba(31, 29, 52, 0.96), rgba(18, 20, 39, 0.96));
+  border: 1px solid rgba(245, 230, 184, 0.14);
+  box-shadow: 0 24px 60px rgba(9, 10, 20, 0.36);
+}
+
+.gold-ring {
+  position: relative;
+}
+
+.gold-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(245, 230, 184, 0.8), rgba(212, 175, 55, 0.18), rgba(245, 230, 184, 0.55));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.soft-grid {
+  background-image:
+    linear-gradient(rgba(26, 26, 46, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 26, 46, 0.03) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

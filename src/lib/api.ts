@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { supabase, supabasePublic } from "./supabase";
 import type { Item, DailyRate, Store, GoldScheme } from "./supabase";
 
 // ---- CATALOGUE ----
@@ -9,20 +9,20 @@ export async function getItems(filters?: {
   search?: string;
   featured?: boolean;
 }) {
-  let query = supabase
+  let query = supabasePublic
     .from("items")
     .select(`
       *,
       metals (id, name, slug),
       jewellery_types (id, name, slug),
       item_collections (collections (id, name, slug)),
-      item_images (id, url, is_primary, display_order)
+      item_images (id, url, is_primary, display_order, frame_type)
     `)
     .eq("is_active", true)
     .order("created_at", { ascending: false });
 
   if (filters?.metals?.length) {
-    const { data: metalRows } = await supabase
+    const { data: metalRows } = await supabasePublic
       .from("metals")
       .select("id")
       .in("slug", filters.metals);
@@ -32,7 +32,7 @@ export async function getItems(filters?: {
   }
 
   if (filters?.types?.length) {
-    const { data: typeRows } = await supabase
+    const { data: typeRows } = await supabasePublic
       .from("jewellery_types")
       .select("id")
       .in("slug", filters.types);
@@ -66,14 +66,14 @@ export async function getItems(filters?: {
 }
 
 export async function getItemById(id: string) {
-  const { data, error } = await supabase
+  const { data, error } = await supabasePublic
     .from("items")
     .select(`
       *,
       metals (id, name, slug),
       jewellery_types (id, name, slug),
       item_collections (collections (id, name, slug)),
-      item_images (id, url, is_primary, display_order)
+      item_images (id, url, is_primary, display_order, frame_type)
     `)
     .eq("id", id)
     .single();
@@ -83,32 +83,33 @@ export async function getItemById(id: string) {
 
 // ---- FILTERS (metadata) ----
 export async function getMetals() {
-  const { data } = await supabase.from("metals").select("*").eq("is_deleted",false).order("display_order");
+  const { data } = await supabasePublic.from("metals").select("*").eq("is_deleted",false).order("display_order");
   return data || [];
 }
 export async function getJewelleryTypes() {
-  const { data } = await supabase.from("jewellery_types").select("*").order("display_order");
+  const { data } = await supabasePublic.from("jewellery_types").select("*").order("display_order");
   return data || [];
 }
 export async function getCollections() {
-  const { data } = await supabase.from("collections").select("*").order("display_order");
+  const { data } = await supabasePublic.from("collections").select("*").order("display_order");
   return data || [];
 }
 
 // ---- RATES ----
 export async function getTodayRates(): Promise<DailyRate | null> {
-  const { data } = await supabase
+  const { data, error } = await supabasePublic
     .from("daily_rates")
     .select("*")
     .order("rate_date", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
+  if (error) throw error;
   return data;
 }
 
 // ---- STORES ----
 export async function getStores(): Promise<Store[]> {
-  const { data } = await supabase.from("stores").select("*").eq("is_active", true);
+  const { data } = await supabasePublic.from("stores").select("*").eq("is_active", true);
   return data || [];
 }
 
@@ -219,7 +220,7 @@ export async function adminCreateItem(item: {
   const { collection_ids, ...itemData } = item;
   const { data, error } = await supabase
     .from("items")
-    .insert(itemData)
+    .insert({ ...itemData, is_active: true })
     .select()
     .single();
   if (error) throw error;
@@ -232,9 +233,16 @@ export async function adminCreateItem(item: {
   return data;
 }
 
-export async function adminUploadImage(file: File, itemId: string) {
+export async function adminUploadImage(
+  file: File,
+  itemId: string,
+  isPrimary = false,
+  frameType: "gallery" | "360" = "gallery",
+  displayOrder?: number
+) {
   const ext = file.name.split(".").pop();
-  const path = `${itemId}/${Date.now()}.${ext}`;
+  const folder = frameType === "360" ? `${itemId}/360` : itemId;
+  const path = `${folder}/${Date.now()}.${ext}`;
   const { error: uploadErr } = await supabase.storage
     .from("item-images")
     .upload(path, file);
@@ -244,13 +252,51 @@ export async function adminUploadImage(file: File, itemId: string) {
     .from("item-images")
     .getPublicUrl(path);
 
+  if (isPrimary) {
+    await supabase.from("item_images").update({ is_primary: false }).eq("item_id", itemId);
+  }
+
   const { error: dbErr } = await supabase.from("item_images").insert({
     item_id: itemId,
     url: urlData.publicUrl,
-    is_primary: true,
+    is_primary: isPrimary,
+    display_order: displayOrder ?? Date.now(),
+    frame_type: frameType,
   });
   if (dbErr) throw dbErr;
   return urlData.publicUrl;
+}
+
+export async function adminDelete360Frames(itemId: string) {
+  const { data: frames } = await supabase
+    .from("item_images")
+    .select("id, url")
+    .eq("item_id", itemId)
+    .eq("frame_type", "360");
+
+  if (frames?.length) {
+    const paths = frames
+      .map((f) => f.url.split("/item-images/")[1])
+      .filter(Boolean)
+      .map((p) => decodeURIComponent(p));
+    if (paths.length) await supabase.storage.from("item-images").remove(paths);
+    await supabase.from("item_images").delete().in("id", frames.map((f) => f.id));
+  }
+}
+
+export async function adminDeleteImage(imageId: string, imageUrl: string) {
+  const storagePath = imageUrl.split("/item-images/")[1];
+  if (storagePath) {
+    await supabase.storage.from("item-images").remove([decodeURIComponent(storagePath)]);
+  }
+  const { error } = await supabase.from("item_images").delete().eq("id", imageId);
+  if (error) throw error;
+}
+
+export async function adminSetPrimaryImage(imageId: string, itemId: string) {
+  await supabase.from("item_images").update({ is_primary: false }).eq("item_id", itemId);
+  const { error } = await supabase.from("item_images").update({ is_primary: true }).eq("id", imageId);
+  if (error) throw error;
 }
 
 // ---- ADMIN: Scheme users ----
