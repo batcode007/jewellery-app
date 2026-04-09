@@ -24,7 +24,10 @@ export default function CatalogueContent() {
     const m = searchParams.get("metal");
     return m ? [m] : [];
   });
-  const [selTypes, setSelTypes] = useState<string[]>([]);
+  const [selTypes, setSelTypes] = useState<string[]>(() => {
+    const t = searchParams.get("type");
+    return t ? [t] : [];
+  });
   const [selCollections, setSelCollections] = useState<string[]>(() => {
     const c = searchParams.get("collection");
     return c ? [c] : [];
@@ -38,8 +41,8 @@ export default function CatalogueContent() {
   const [priceMax, setPriceMax] = useState<number | null>(() => {
     const v = searchParams.get("maxPrice"); return v ? Number(v) : null;
   });
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [search, setSearch] = useState(() => searchParams.get("search") ?? "");
+  const [debouncedSearch, setDebouncedSearch] = useState(() => searchParams.get("search") ?? "");
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -119,150 +122,150 @@ export default function CatalogueContent() {
   );
 
   return (
-    <div className="py-7 pb-10">
-      <div className="luxury-panel mb-5 rounded-[30px] p-5 md:p-6">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-dark">Curated Catalogue</div>
-            <h1 className="font-display text-5xl text-navy">Our Collection</h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-500">
-              Explore bridal favourites, daily wear staples, and statement pieces with richer filtering and cleaner browsing.
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
-              <input
-                placeholder="Search jewellery..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-52 rounded-full border border-gray-200 bg-white/85 py-2 pl-9 pr-3 text-sm outline-none focus:border-gold"
-              />
-            </div>
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-1.5 rounded-full bg-navy px-4 py-2 text-sm font-medium text-gold-light"
-            >
-              Filters
-              {activeCount > 0 && (
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gold text-[10px] font-bold text-navy">
-                  {activeCount}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
+    <div className="py-8 pb-12">
+      <div className="mb-6 flex items-center gap-2 text-sm text-gray-500">
+        <span>Home</span>
+        <span>›</span>
+        <span className="text-navy">Catalogue</span>
       </div>
 
-      {showFilters && (
-        <div className="luxury-panel mb-5 rounded-[28px] p-5">
-          <div className="mb-4 flex items-center justify-between">
-            <span className="font-display text-3xl text-navy">Filters</span>
-            {activeCount > 0 && (
-              <button
-                onClick={() => {
-                  setSelMetals([]); setSelTypes([]); setSelCollections([]);
-                  setSelFeatured(false); setPriceMin(null); setPriceMax(null);
-                }}
-                className="text-xs font-semibold uppercase tracking-[0.2em] text-rose-600"
-              >
-                Clear All
-              </button>
-            )}
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.26em] text-gray-400">Metal</div>
-              <div className="flex flex-wrap gap-2">
+      <div className="store-shell overflow-hidden rounded-[22px]">
+        <div className="grid md:grid-cols-[280px_minmax(0,1fr)]">
+          <aside className="border-r border-[rgba(232,220,197,0.9)] bg-[rgba(255,253,248,0.95)] p-6">
+            <div className="mb-6">
+              <div className="section-kicker">Material</div>
+              <div className="mt-4 space-y-3">
                 {metals.map((m) => (
-                  <Badge key={m.slug} name={m.name} active={selMetals.includes(m.slug)} onToggle={() => toggle(selMetals, setSelMetals, m.slug)} />
+                  <label key={m.slug} className="flex items-center gap-3 text-sm text-navy">
+                    <input
+                      type="checkbox"
+                      checked={selMetals.includes(m.slug)}
+                      onChange={() => toggle(selMetals, setSelMetals, m.slug)}
+                      className="h-4 w-4 rounded border-gray-300 text-gold focus:ring-gold"
+                    />
+                    {m.name}
+                  </label>
                 ))}
               </div>
             </div>
-            <div>
-              <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.26em] text-gray-400">Type</div>
-              <div className="flex flex-wrap gap-2">
+
+            <div className="border-t border-[rgba(232,220,197,0.9)] pt-6">
+              <div className="section-kicker">Type</div>
+              <div className="mt-4 space-y-3">
                 {types.map((t) => (
-                  <Badge key={t.slug} name={t.name} active={selTypes.includes(t.slug)} onToggle={() => toggle(selTypes, setSelTypes, t.slug)} />
+                  <label key={t.slug} className="flex items-center gap-3 text-sm text-navy">
+                    <input
+                      type="checkbox"
+                      checked={selTypes.includes(t.slug)}
+                      onChange={() => toggle(selTypes, setSelTypes, t.slug)}
+                      className="h-4 w-4 rounded border-gray-300 text-gold focus:ring-gold"
+                    />
+                    {t.name}
+                  </label>
                 ))}
               </div>
             </div>
-            <div>
-              <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.26em] text-gray-400">Collection</div>
-              <div className="flex flex-wrap gap-2">
-                {collections.map((c) => (
-                  <Badge key={c.slug} name={c.name} active={selCollections.includes(c.slug)} onToggle={() => toggle(selCollections, setSelCollections, c.slug)} />
-                ))}
-              </div>
-            </div>
-            <div>
-              <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.26em] text-gray-400">Price Range</div>
-              <div className="flex flex-wrap gap-2">
+
+            <div className="border-t border-[rgba(232,220,197,0.9)] pt-6">
+              <div className="section-kicker">Price</div>
+              <div className="mt-4 flex flex-wrap gap-2">
                 {PRICE_RANGES.map((r) => (
                   <Badge key={r.label} name={r.label} active={activePriceRange?.label === r.label} onToggle={() => setPriceRange(r)} />
                 ))}
               </div>
             </div>
-          </div>
-          <div className="mt-4">
-            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.26em] text-gray-400">Other</div>
-            <div className="flex flex-wrap gap-2">
+          </aside>
+
+          <section className="p-6 md:p-8">
+            <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <h1 className="font-display text-4xl text-navy">Our Collection</h1>
+                <div className="mt-2 text-sm text-gray-500">
+                  {loading ? "Loading..." : `${displayItems.length} items`}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
+                  <input
+                    placeholder="Search jewellery..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-56 rounded-full border border-[rgba(232,220,197,0.9)] bg-white px-9 py-2 text-sm outline-none focus:border-gold"
+                  />
+                </div>
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="rounded-full border border-[rgba(232,220,197,0.9)] bg-[rgba(244,237,224,0.8)] px-4 py-2 text-sm font-medium text-gray-600 md:hidden"
+                >
+                  Filters
+                </button>
+              </div>
+            </div>
+
+            {showFilters && (
+              <div className="mb-5 space-y-4 rounded-[20px] border border-[rgba(232,220,197,0.9)] bg-[rgba(255,253,248,0.96)] p-5 md:hidden">
+                <div>
+                  <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.26em] text-gray-400">Collection</div>
+                  <div className="flex flex-wrap gap-2">
+                    {collections.map((c) => (
+                      <Badge key={c.slug} name={c.name} active={selCollections.includes(c.slug)} onToggle={() => toggle(selCollections, setSelCollections, c.slug)} />
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.26em] text-gray-400">Other</div>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge name="Top Selling" active={selFeatured} onToggle={() => setSelFeatured((v) => !v)} />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="mb-5 hidden flex-wrap gap-2 md:flex">
+              {collections.map((c) => (
+                <Badge key={c.slug} name={c.name} active={selCollections.includes(c.slug)} onToggle={() => toggle(selCollections, setSelCollections, c.slug)} />
+              ))}
               <Badge name="Top Selling" active={selFeatured} onToggle={() => setSelFeatured((v) => !v)} />
             </div>
-          </div>
-        </div>
-      )}
 
-      {activeCount > 0 && !showFilters && (
-        <div className="mb-4 flex flex-wrap gap-2">
-          {[...selMetals, ...selTypes, ...selCollections].map((f) => {
-            const displayName =
-              metals.find((m) => m.slug === f)?.name ||
-              types.find((t) => t.slug === f)?.name ||
-              collections.find((c) => c.slug === f)?.name || f;
-            return (
-              <span key={f} className="flex items-center gap-1 rounded-full border border-gold/20 bg-gold/10 px-3 py-1.5 text-xs font-medium text-gold-dark">
-                {displayName}
-                <button onClick={() => {
-                  setSelMetals((p) => p.filter((v) => v !== f));
-                  setSelTypes((p) => p.filter((v) => v !== f));
-                  setSelCollections((p) => p.filter((v) => v !== f));
-                }}>✕</button>
-              </span>
-            );
-          })}
-          {selFeatured && (
-            <span className="flex items-center gap-1 rounded-full border border-gold/20 bg-gold/10 px-3 py-1.5 text-xs font-medium text-gold-dark">
-              Top Selling <button onClick={() => setSelFeatured(false)}>✕</button>
-            </span>
-          )}
-          {activePriceRange && (
-            <span className="flex items-center gap-1 rounded-full border border-gold/20 bg-gold/10 px-3 py-1.5 text-xs font-medium text-gold-dark">
-              {activePriceRange.label}
-              <button onClick={() => { setPriceMin(null); setPriceMax(null); }}>✕</button>
-            </span>
-          )}
-        </div>
-      )}
+            {activeCount > 0 && (
+              <div className="mb-4 flex flex-wrap gap-2">
+                {[...selMetals, ...selTypes, ...selCollections].map((f) => {
+                  const displayName =
+                    metals.find((m) => m.slug === f)?.name ||
+                    types.find((t) => t.slug === f)?.name ||
+                    collections.find((c) => c.slug === f)?.name || f;
+                  return (
+                    <span key={f} className="flex items-center gap-1 rounded-full border border-gold/20 bg-gold/10 px-3 py-1.5 text-xs font-medium text-gold-dark">
+                      {displayName}
+                      <button onClick={() => {
+                        setSelMetals((p) => p.filter((v) => v !== f));
+                        setSelTypes((p) => p.filter((v) => v !== f));
+                        setSelCollections((p) => p.filter((v) => v !== f));
+                      }}>✕</button>
+                    </span>
+                  );
+                })}
+              </div>
+            )}
 
-      <div className="mb-5 flex items-center justify-between gap-3 text-sm text-gray-500">
-        <span>{loading ? "Loading..." : `Showing ${displayItems.length} items`}</span>
-        <span className="hidden text-xs uppercase tracking-[0.24em] text-gold-dark sm:inline">Premium picks, updated live</span>
+            <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+              {displayItems.map((item) => (
+                <ItemCard key={item.id} item={item} onClick={() => setSelectedItem(item)} />
+              ))}
+            </div>
+
+            {!loading && displayItems.length === 0 && (
+              <div className="mt-6 rounded-[20px] border border-[rgba(232,220,197,0.9)] bg-[rgba(255,253,248,0.96)] py-16 text-center text-gray-400">
+                <div className="mb-3 text-5xl">🔍</div>
+                <p className="font-medium text-navy">No items match your filters</p>
+                <p className="mt-1 text-sm">Try adjusting your filters or search query</p>
+              </div>
+            )}
+          </section>
+        </div>
       </div>
-
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        {displayItems.map((item) => (
-          <ItemCard key={item.id} item={item} onClick={() => setSelectedItem(item)} />
-        ))}
-      </div>
-
-      {!loading && displayItems.length === 0 && (
-        <div className="luxury-panel rounded-[28px] py-16 text-center text-gray-400">
-          <div className="mb-3 text-5xl">🔍</div>
-          <p className="font-medium text-navy">No items match your filters</p>
-          <p className="mt-1 text-sm">Try adjusting your filters or search query</p>
-        </div>
-      )}
 
       <ItemDetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />
     </div>

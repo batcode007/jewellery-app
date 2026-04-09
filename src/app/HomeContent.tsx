@@ -160,6 +160,48 @@ const PRICE_FILTERS = [
   { label: "Above ₹50K",   params: "minPrice=50000" },
 ];
 
+const TRUST_BADGES = [
+  { title: "BIS Hallmarked", desc: "100% Certified Gold", icon: "shield" },
+  { title: "Insured Delivery", desc: "Free shipping across India", icon: "truck" },
+  { title: "Easy Returns", desc: "15-day return policy", icon: "return" },
+  { title: "IGI Certified", desc: "Certified diamonds", icon: "gem" },
+];
+
+function BadgeIcon({ icon }: { icon: string }) {
+  if (icon === "truck") {
+    return (
+      <svg viewBox="0 0 24 24" className="h-8 w-8 fill-none stroke-current" strokeWidth="1.8">
+        <path d="M3 7h11v8H3z" />
+        <path d="M14 10h4l3 3v2h-7z" />
+        <circle cx="8" cy="18" r="2" />
+        <circle cx="18" cy="18" r="2" />
+      </svg>
+    );
+  }
+  if (icon === "return") {
+    return (
+      <svg viewBox="0 0 24 24" className="h-8 w-8 fill-none stroke-current" strokeWidth="1.8">
+        <path d="M9 7H5v4" />
+        <path d="M5 11a7 7 0 1 0 2-5" />
+      </svg>
+    );
+  }
+  if (icon === "gem") {
+    return (
+      <svg viewBox="0 0 24 24" className="h-8 w-8 fill-none stroke-current" strokeWidth="1.8">
+        <path d="M7 4h10l4 5-9 11L3 9z" />
+        <path d="M7 4 12 9l5-5M3 9h18" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" className="h-8 w-8 fill-none stroke-current" strokeWidth="1.8">
+      <path d="M12 3 5 6v6c0 4.2 2.9 7.3 7 9 4.1-1.7 7-4.8 7-9V6z" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  );
+}
+
 export default function HomeContent() {
   const [featured, setFeatured] = useState<Item[]>([]);
   const [rates, setRates] = useState<DailyRate | null>(null);
@@ -184,7 +226,7 @@ export default function HomeContent() {
         <section className="mt-8">
           <div className="mb-4 flex items-end justify-between gap-4">
             <div>
-              <div className="text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-dark">Live Market Snapshot</div>
+              <div className="section-kicker">Live Market Snapshot</div>
               <h2 className="font-display text-4xl text-navy">Today&apos;s Rates</h2>
             </div>
             <div className="text-right text-xs text-gray-500">
@@ -197,7 +239,7 @@ export default function HomeContent() {
               { label: "Gold 22K", value: `₹${rates.gold_22k?.toLocaleString("en-IN")}/g` },
               { label: "Silver", value: `₹${rates.silver}/g`, change: rates.silver_change },
             ].map((r) => (
-              <div key={r.label} className="luxury-panel rounded-[24px] p-5">
+              <div key={r.label} className="store-card rounded-[20px] p-5">
                 <div className="text-[11px] font-semibold uppercase tracking-[0.28em] text-gray-500">{r.label}</div>
                 <div className="mt-3 font-display text-4xl text-navy">{r.value}</div>
                 {r.change != null && (
@@ -211,15 +253,12 @@ export default function HomeContent() {
         </section>
       )}
 
-      <section className="mt-10">
-        <div className="mb-5 flex items-end justify-between gap-4">
+      <section className="mt-14 rounded-[24px] bg-[rgba(255,253,248,0.9)] px-5 py-12 md:px-8">
+        <div className="mb-8 text-center">
           <div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-dark">Discover</div>
-            <h2 className="font-display text-4xl text-navy">Shop by Category</h2>
+            <div className="section-kicker">Shop By Category</div>
+            <h2 className="mt-3 font-display text-4xl text-navy">Find Your Perfect Piece</h2>
           </div>
-          <p className="max-w-md text-sm leading-6 text-gray-500">
-            Browse bestselling silhouettes, bridal statements, and everyday essentials with a cleaner path into the catalogue.
-          </p>
         </div>
         <div className="grid grid-cols-5 gap-2 sm:gap-3">
           {CATEGORIES.map((c) => (
@@ -249,7 +288,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      <section className="luxury-panel mt-8 rounded-[28px] px-5 py-6">
+      <section className="store-card mt-10 rounded-[20px] px-5 py-6">
         <div className="mb-4 flex items-center gap-3">
           <h2 className="font-display text-3xl text-navy whitespace-nowrap">Filter by Price</h2>
           <div className="h-px flex-1 bg-gradient-to-r from-gold/25 to-transparent" />
@@ -267,13 +306,16 @@ export default function HomeContent() {
         </div>
       </section>
 
-      <section className="mt-10 mb-10">
+      <section className="mt-14 mb-10">
+        <div className="mb-8 text-center">
+          <div className="section-kicker">Trending Now</div>
+          <h2 className="mt-3 font-display text-4xl text-navy">New Arrivals &amp; Bestsellers</h2>
+        </div>
         <div className="mb-5 flex items-end justify-between gap-4">
+          <div />
           <div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-dark">Signature Picks</div>
-            <h2 className="font-display text-4xl text-navy">Featured Collection</h2>
+            <Link href="/catalogue" className="rounded-full border border-gold/20 bg-gold/10 px-4 py-2 text-sm font-semibold text-gold-dark hover:bg-gold/15">View All →</Link>
           </div>
-          <Link href="/catalogue" className="rounded-full border border-gold/20 bg-gold/10 px-4 py-2 text-sm font-semibold text-gold-dark hover:bg-gold/15">View All →</Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {featured.slice(0, 4).map((item) => (
@@ -282,17 +324,35 @@ export default function HomeContent() {
         </div>
       </section>
 
-      <section className="mb-10 overflow-hidden rounded-[32px] bg-[linear-gradient(135deg,#f8ead1_0%,#f3dfc2_30%,#efd3d3_100%)] p-8 shadow-[0_24px_60px_rgba(73,48,22,0.08)]">
-        <div className="max-w-xl">
-          <div className="mb-2 text-xs font-semibold uppercase tracking-[0.3em] text-gold-dark">Save Smartly</div>
-          <h2 className="font-display text-5xl leading-none text-navy">Gold Savings Scheme</h2>
-          <p className="mt-3 max-w-lg text-sm leading-7 text-gray-600">
+      <section className="mb-14 overflow-hidden rounded-[20px] bg-[linear-gradient(270deg,#c9a962_0%,#8b7845_100%)] p-8 text-white shadow-[0_24px_60px_rgba(73,48,22,0.08)]">
+        <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+          <div className="max-w-xl">
+            <div className="inline-flex rounded-md bg-white/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-white">Exclusive Offer</div>
+            <h2 className="mt-4 font-display text-5xl leading-none">Gold Savings Scheme — 11 + 1</h2>
+            <p className="mt-3 max-w-lg text-sm leading-7 text-white/90">
           Pay for 11 months and get the 12th month free! Start with any amount you choose.
-          </p>
-          <Link href="/scheme" className="mt-6 inline-block rounded-full bg-navy px-6 py-3 text-sm font-semibold text-gold-light shadow-[0_16px_35px_rgba(26,26,46,0.24)]">
-            Learn More & Enroll →
-          </Link>
+            </p>
+          </div>
+          <div className="text-center md:text-right">
+            <div className="text-sm text-white/80">Starting from</div>
+            <div className="mt-2 font-display text-4xl">₹1,000/month</div>
+            <Link href="/scheme" className="mt-5 inline-block rounded-lg bg-white px-8 py-3 text-sm font-semibold text-gold-dark">
+              Start Scheme →
+            </Link>
+          </div>
         </div>
+      </section>
+
+      <section className="mb-0 grid gap-6 rounded-[20px] bg-[rgba(244,237,224,0.72)] px-6 py-10 md:grid-cols-4">
+        {TRUST_BADGES.map((badge) => (
+          <div key={badge.title} className="text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center text-gold-dark">
+              <BadgeIcon icon={badge.icon} />
+            </div>
+            <div className="mt-3 text-sm font-semibold text-navy">{badge.title}</div>
+            <div className="mt-1 text-sm text-gray-500">{badge.desc}</div>
+          </div>
+        ))}
       </section>
 
       <ItemDetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />

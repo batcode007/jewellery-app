@@ -14,6 +14,12 @@
   --color-ink: #2b2419;
   --color-sand: #f3ead8;
   --color-wine: #5d2a2a;
+  --color-paper: #f8f3ea;
+  --color-surface: #fffdf8;
+  --color-surface-alt: #f4ede0;
+  --color-muted: #8a847a;
+  --color-line: #e8dcc5;
+  --color-charcoal: #201d26;
 }
 
 * {
@@ -28,7 +34,7 @@ body {
   background:
     radial-gradient(circle at top left, rgba(212, 175, 55, 0.16), transparent 28%),
     radial-gradient(circle at top right, rgba(93, 42, 42, 0.12), transparent 24%),
-    linear-gradient(180deg, #fffdf8 0%, #fff8ef 48%, #f9f0e2 100%);
+    linear-gradient(180deg, #fbf7ef 0%, #f8f1e4 48%, #f6ecdd 100%);
   color: var(--color-ink);
 }
 
@@ -111,4 +117,24 @@ select {
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+.store-shell {
+  background: rgba(255, 252, 246, 0.72);
+  border: 1px solid rgba(211, 193, 160, 0.55);
+  box-shadow: 0 20px 48px rgba(54, 40, 18, 0.08);
+}
+
+.store-card {
+  background: rgba(255, 253, 248, 0.96);
+  border: 1px solid rgba(232, 220, 197, 0.9);
+  box-shadow: 0 12px 30px rgba(43, 36, 25, 0.06);
+}
+
+.section-kicker {
+  color: var(--color-gold-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
 }
