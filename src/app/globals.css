@@ -1,25 +1,53 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Avenir Next", "Segoe UI", system-ui, sans-serif;
-  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  /* Fonts */
+  --font-sans: var(--font-inter), "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-serif: var(--font-dm-serif), Georgia, serif;
+  --font-display: var(--font-dm-serif), Georgia, serif;
 
-  --color-gold: #D4AF37;
-  --color-gold-light: #F5E6B8;
-  --color-gold-dark: #B8960C;
-  --color-navy: #1A1A2E;
-  --color-navy-light: #16213E;
-  --color-cream: #FFF9F0;
-  --color-rose: #F8E8E0;
-  --color-ink: #2b2419;
-  --color-sand: #f3ead8;
-  --color-wine: #5d2a2a;
-  --color-paper: #f8f3ea;
-  --color-surface: #fffdf8;
-  --color-surface-alt: #f4ede0;
-  --color-muted: #8a847a;
-  --color-line: #e8dcc5;
-  --color-charcoal: #201d26;
+  /* Pushkin design system tokens */
+  --color-bg-surface: #ffffff;
+  --color-bg-surface-alt: #F8F5EF;
+  --color-bg-surface-dark: #1A1A1C;
+  --color-bg-page: #FDFBF7;
+  --color-bg-gold: #C9A962;
+  --color-bg-gold-light: #F5EFE0;
+  --color-bg-gold-deep: #8B7845;
+  --color-bg-green: #2E7D32;
+  --color-bg-green-light: #E8F5E9;
+  --color-bg-red-light: #FFEBEE;
+  --color-bg-admin-card: #242426;
+  --color-bg-admin-sidebar: #111113;
+
+  --color-text-primary: #1A1A1C;
+  --color-text-secondary: #555557;
+  --color-text-muted: #707070;
+  --color-text-cream: #F5F5F0;
+  --color-text-gold: #6B5A30;
+  --color-text-footer: #A0A0A2;
+  --color-text-admin-inactive: #6E6E70;
+
+  --color-border-light: #E8E4DC;
+  --color-border-gold: #C9A962;
+  --color-border-admin: #3A3A3C;
+  --color-border-admin-subtle: #2A2A2C;
+
+  --color-green: #2E7D32;
+  --color-green-light: #E8F5E9;
+  --color-footer-divider: #333336;
+
+  /* Legacy token aliases — map to Pushkin values so older components stay consistent */
+  --color-gold: #C9A962;
+  --color-gold-dark: #8B7845;
+  --color-gold-light: #F5EFE0;
+  --color-navy: #1A1A1C;
+  --color-cream: #FDFBF7;
+  --color-ink: #1A1A1C;
+  --color-sand: #F8F5EF;
+  --color-paper: #FDFBF7;
+  --color-muted: #707070;
+  --color-line: #E8E4DC;
 }
 
 * {
@@ -32,10 +60,10 @@ html {
 
 body {
   background:
-    radial-gradient(circle at top left, rgba(212, 175, 55, 0.16), transparent 28%),
-    radial-gradient(circle at top right, rgba(93, 42, 42, 0.12), transparent 24%),
-    linear-gradient(180deg, #fbf7ef 0%, #f8f1e4 48%, #f6ecdd 100%);
-  color: var(--color-ink);
+    radial-gradient(circle at top left, rgba(201, 169, 98, 0.14), transparent 28%),
+    radial-gradient(circle at top right, rgba(139, 120, 69, 0.08), transparent 24%),
+    linear-gradient(180deg, #fdfbf7 0%, #f8f3ea 48%, #f5efe0 100%);
+  color: var(--color-text-primary);
 }
 
 a,
@@ -53,8 +81,8 @@ select {
 }
 
 ::selection {
-  background: rgba(212, 175, 55, 0.26);
-  color: var(--color-navy);
+  background: rgba(201, 169, 98, 0.26);
+  color: var(--color-text-primary);
 }
 
 ::-webkit-scrollbar {
@@ -62,7 +90,7 @@ select {
   height: 6px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D4AF37;
+  background: var(--color-bg-gold);
   border-radius: 3px;
 }
 
@@ -96,7 +124,7 @@ select {
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(245, 230, 184, 0.8), rgba(212, 175, 55, 0.18), rgba(245, 230, 184, 0.55));
+  background: linear-gradient(135deg, rgba(201, 169, 98, 0.7), rgba(201, 169, 98, 0.18), rgba(201, 169, 98, 0.55));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;

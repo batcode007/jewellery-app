@@ -1,53 +1,17 @@
 "use client";
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { Search, Coins, BookOpen, MapPin, Heart, User, Menu, X } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { getTodayRates } from "@/lib/api";
 import type { DailyRate } from "@/lib/supabase";
 import LoginModal from "./LoginModal";
-
-const NAV = [
-  { href: "/", label: "Home" },
-  { href: "/catalogue", label: "Catalogue" },
-  { href: "/scheme", label: "Gold Scheme" },
-  { href: "/rates", label: "Gold Rate" },
-  { href: "/stores", label: "Stores" },
-];
-
-const CATEGORY_NAV = [
-  { label: "Gold", href: "/catalogue?metal=gold" },
-  { label: "Silver", href: "/catalogue?metal=silver" },
-  { label: "Diamond", href: "/catalogue?metal=diamond" },
-  { label: "Sterling Silver", href: "/catalogue?metal=sterling-silver" },
-  { label: "Rings", href: "/catalogue?type=rings" },
-  { label: "Earrings", href: "/catalogue?type=earrings" },
-  { label: "Necklaces", href: "/catalogue?type=necklaces" },
-  { label: "Bangles", href: "/catalogue?type=bangles" },
-  { label: "Pendants", href: "/catalogue?type=pendants" },
-  { label: "Light Jewellery", href: "/catalogue?collection=light-jewellery" },
-  { label: "Gifting", href: "/catalogue?collection=gifting" },
-];
-
-function IconLabel({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex items-center gap-2 rounded-full border border-[rgba(211,193,160,0.35)] px-3 py-2 text-sm text-gray-600">
-      <span className="flex h-4 w-4 items-center justify-center text-gold-dark">{children}</span>
-      <span className="hidden sm:inline">{label}</span>
-    </div>
-  );
-}
+import CategoryNav from "./CategoryNav";
 
 export default function Header() {
-  const pathname = usePathname();
   const router = useRouter();
-  const { profile, signOut } = useAuth();
+  const { profile } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
   const [rates, setRates] = useState<DailyRate | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -60,130 +24,164 @@ export default function Header() {
   function submitSearch(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const q = search.trim();
-    router.push(q ? `/catalogue?search=${encodeURIComponent(q)}` : "/catalogue");
+    if (q) router.push(`/search?q=${encodeURIComponent(q)}`);
+    setMenuOpen(false);
   }
 
   return (
     <>
       <header className="sticky top-0 z-50">
-        <div className="bg-[#201d26] px-4 py-2 text-xs text-[#f7efe1] md:px-6">
-          <div className="mx-auto hidden max-w-7xl items-center justify-between gap-4 md:flex">
-            <span>Free shipping on orders above ₹25,000</span>
-            <span className="truncate">
-              Today&apos;s rates: Gold 22K: ₹{rates?.gold_22k?.toLocaleString("en-IN") ?? "--"}/g | Silver: ₹{rates?.silver?.toLocaleString("en-IN") ?? "--"}/g
-            </span>
-            <div className="flex items-center gap-5">
-              <span>Track Order</span>
-              <span>Help &amp; Support</span>
-            </div>
+        {/* Utility Bar */}
+        <div className="w-full h-9 bg-bg-surface-dark flex items-center justify-between px-4 md:px-10">
+          <span className="text-[13px] text-text-cream hidden sm:block">
+            Free shipping on orders above ₹25,000
+          </span>
+          <span className="text-[13px] text-text-cream">
+            Gold 22K: ₹{rates?.gold_22k?.toLocaleString("en-IN") ?? "--"}/g &nbsp;|&nbsp; Silver: ₹{rates?.silver?.toLocaleString("en-IN") ?? "--"}/g
+          </span>
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="/stores" className="text-[13px] text-text-cream hover:underline">
+              Track Order
+            </Link>
+            <Link href="/stores" className="text-[13px] text-text-cream hover:underline">
+              Help &amp; Support
+            </Link>
           </div>
         </div>
 
-        <div className="store-shell border-b border-[rgba(211,193,160,0.45)] bg-[rgba(255,252,246,0.92)] backdrop-blur-xl">
-          <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4 md:px-6">
-            <Link href="/" className="shrink-0">
-              <div className="font-display text-[2rem] leading-none text-gold-dark">Soni Jewellers</div>
+        {/* Main Navbar */}
+        <nav className="w-full bg-bg-surface border-b border-border-light">
+          <div className="flex items-center justify-between px-4 md:px-10 h-[70px]">
+            {/* Logo */}
+            <Link href="/" className="font-serif text-[24px] text-border-gold shrink-0">
+              Soni Jewellers
             </Link>
 
-            <form onSubmit={submitSearch} className="hidden flex-1 items-center md:flex">
-              <div className="flex w-full items-center rounded-full border border-[rgba(211,193,160,0.75)] bg-[rgba(244,237,224,0.75)] px-4 py-3 text-sm text-gray-500">
-                <svg viewBox="0 0 20 20" className="mr-3 h-4 w-4 fill-none stroke-current" strokeWidth="1.8">
-                  <circle cx="8.5" cy="8.5" r="5.5" />
-                  <path d="M12.5 12.5 17 17" strokeLinecap="round" />
-                </svg>
+            {/* Search Bar — desktop */}
+            <form onSubmit={submitSearch} className="hidden md:flex flex-1 mx-6 max-w-[480px]">
+              <div className="w-full h-[42px] rounded-full bg-bg-surface-alt flex items-center gap-2.5 px-[18px] border border-transparent hover:border-border-light transition-colors">
+                <Search size={16} className="text-text-muted shrink-0" />
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search for gold necklaces, rings, earrings..."
-                  className="w-full bg-transparent text-sm outline-none placeholder:text-gray-500"
+                  className="w-full bg-transparent text-sm text-text-primary placeholder:text-text-muted outline-none"
                 />
               </div>
             </form>
 
-            <div className="hidden items-center gap-2 lg:flex">
-              <Link href="/scheme" className="rounded-full bg-gold px-4 py-2 text-sm font-semibold text-white">
-                Gold Scheme
+            {/* CTA Buttons — desktop */}
+            <div className="hidden lg:flex items-center gap-2.5">
+              <Link
+                href="/scheme"
+                className="flex items-center gap-1.5 rounded-full bg-bg-gold px-4 py-2 hover:brightness-110 active:scale-95 transition-all"
+              >
+                <Coins size={15} className="text-white" />
+                <span className="text-[13px] font-semibold text-white">Gold Scheme</span>
               </Link>
-              <Link href="/scheme" className="rounded-full border border-gold bg-gold-light/60 px-4 py-2 text-sm font-semibold text-gold-dark">
-                My Passbook
+              <Link
+                href="/scheme"
+                className="flex items-center gap-1.5 rounded-full bg-bg-gold-light px-4 py-2 border border-border-gold hover:bg-border-gold/20 active:scale-95 transition-all"
+              >
+                <BookOpen size={15} className="text-text-gold" />
+                <span className="text-[13px] font-semibold text-text-gold">My Passbook</span>
               </Link>
             </div>
 
-            <div className="hidden items-center gap-2 md:flex">
-              <IconLabel label="Stores">
-                <svg viewBox="0 0 20 20" className="h-4 w-4 fill-none stroke-current" strokeWidth="1.7">
-                  <path d="M4 8.5 10 3l6 5.5V16H4Z" />
-                  <path d="M8 16v-4h4v4" />
-                </svg>
-              </IconLabel>
-              <IconLabel label="Wishlist">
-                <svg viewBox="0 0 20 20" className="h-4 w-4 fill-none stroke-current" strokeWidth="1.7">
-                  <path d="M10 16s-5-3.1-6.7-6C1.9 7.5 3 4.8 5.8 4.8c1.6 0 2.7.9 3.2 1.8.5-.9 1.6-1.8 3.2-1.8C15 4.8 16.1 7.5 14.7 10 13 12.9 8 16 8 16" />
-                </svg>
-              </IconLabel>
+            {/* Nav Icons — desktop */}
+            <div className="hidden md:flex items-center gap-5 ml-4">
+              <Link href="/stores" className="flex flex-col items-center gap-0.5 hover:opacity-70 transition-opacity">
+                <MapPin size={20} className="text-border-gold" />
+                <span className="text-[11px] text-text-secondary">Stores</span>
+              </Link>
+              <Link href="/wishlist" className="flex flex-col items-center gap-0.5 hover:opacity-70 transition-opacity">
+                <Heart size={20} className="text-border-gold" />
+                <span className="text-[11px] text-text-secondary">Wishlist</span>
+              </Link>
               {profile ? (
-                <button onClick={signOut} className="rounded-full border border-[rgba(211,193,160,0.45)] px-4 py-2 text-sm font-medium text-gray-600">
-                  Logout
-                </button>
+                <Link href="/account" className="flex flex-col items-center gap-0.5 hover:opacity-70 transition-opacity">
+                  <User size={20} className="text-border-gold" />
+                  <span className="text-[11px] text-text-secondary">Account</span>
+                </Link>
               ) : (
-                <button onClick={() => setShowLogin(true)} className="rounded-full border border-[rgba(211,193,160,0.45)] px-4 py-2 text-sm font-medium text-gray-600">
-                  Account
+                <button
+                  onClick={() => setShowLogin(true)}
+                  className="flex flex-col items-center gap-0.5 hover:opacity-70 transition-opacity"
+                >
+                  <User size={20} className="text-border-gold" />
+                  <span className="text-[11px] text-text-secondary">Account</span>
                 </button>
               )}
             </div>
 
+            {/* Mobile hamburger */}
             <button
               onClick={() => setMenuOpen((v) => !v)}
-              className="ml-auto rounded-full border border-[rgba(211,193,160,0.45)] p-2 md:hidden"
+              className="md:hidden ml-auto p-2 rounded-full border border-border-light"
               aria-label="Toggle menu"
             >
-              <svg viewBox="0 0 20 20" className="h-5 w-5 fill-none stroke-[#6f6659]" strokeWidth="1.8">
-                <path d="M3 6h14M3 10h14M3 14h14" strokeLinecap="round" />
-              </svg>
+              {menuOpen ? <X size={20} className="text-text-primary" /> : <Menu size={20} className="text-text-primary" />}
             </button>
           </div>
+        </nav>
 
-          <nav className="hidden border-t border-[rgba(211,193,160,0.35)] px-4 md:block md:px-6">
-            <div className="hide-scrollbar mx-auto flex max-w-7xl items-center gap-8 overflow-x-auto py-3 text-sm text-[#4a4339]">
-              {CATEGORY_NAV.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className="whitespace-nowrap border-b-2 border-transparent pb-1 hover:border-gold hover:text-gold-dark"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </nav>
+        {/* Category Nav — desktop only */}
+        <div className="hidden md:block">
+          <CategoryNav />
+        </div>
 
-          {menuOpen && (
-            <div className="border-t border-[rgba(211,193,160,0.35)] bg-[rgba(255,252,246,0.98)] px-4 py-4 md:hidden">
-              <form onSubmit={submitSearch} className="mb-4">
+        {/* Mobile Menu */}
+        {menuOpen && (
+          <div className="md:hidden bg-bg-surface border-b border-border-light px-4 py-4 flex flex-col gap-3">
+            <form onSubmit={submitSearch}>
+              <div className="flex items-center gap-2.5 rounded-full bg-bg-surface-alt px-4 h-10 border border-border-light">
+                <Search size={15} className="text-text-muted shrink-0" />
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search jewellery..."
-                  className="w-full rounded-full border border-[rgba(211,193,160,0.75)] bg-[rgba(244,237,224,0.75)] px-4 py-3 text-sm outline-none"
+                  className="w-full bg-transparent text-sm text-text-primary placeholder:text-text-muted outline-none"
                 />
-              </form>
-              <div className="grid gap-2">
-                {NAV.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMenuOpen(false)}
-                    className={`rounded-2xl px-4 py-3 text-sm ${
-                      pathname === item.href ? "bg-gold text-white" : "bg-[rgba(244,237,224,0.75)] text-[#4a4339]"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
               </div>
+            </form>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { href: "/", label: "Home" },
+                { href: "/catalogue", label: "Catalogue" },
+                { href: "/scheme", label: "Gold Scheme" },
+                { href: "/rates", label: "Gold Rates" },
+                { href: "/stores", label: "Stores" },
+                { href: "/wishlist", label: "Wishlist" },
+                { href: "/about", label: "About Us" },
+              ].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-xl bg-bg-surface-alt px-4 py-3 text-sm text-text-primary text-center"
+                >
+                  {item.label}
+                </Link>
+              ))}
+              {profile ? (
+                <Link
+                  href="/account"
+                  onClick={() => setMenuOpen(false)}
+                  className="rounded-xl bg-bg-gold px-4 py-3 text-sm text-white text-center font-semibold"
+                >
+                  My Account
+                </Link>
+              ) : (
+                <button
+                  onClick={() => { setMenuOpen(false); setShowLogin(true); }}
+                  className="rounded-xl bg-bg-gold px-4 py-3 text-sm text-white text-center font-semibold"
+                >
+                  Sign In
+                </button>
+              )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </header>
 
       <LoginModal open={showLogin} onClose={() => setShowLogin(false)} />

@@ -1,8 +1,20 @@
 import type { Metadata } from "next";
+import { DM_Serif_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const dmSerif = DM_Serif_Display({
+  variable: "--font-dm-serif",
+  weight: "400",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "Soni Jewellers | Exquisite Handcrafted Jewellery",
@@ -11,8 +23,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-cream text-navy antialiased">
+    <html lang="en" className={`${inter.variable} ${dmSerif.variable}`}>
+      <body className="min-h-screen bg-bg-page text-text-primary antialiased">
         <AuthProvider>
           <Header />
           <main className="relative mx-auto max-w-7xl px-4 pb-8 md:px-6">{children}</main>
