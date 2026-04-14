@@ -12,8 +12,8 @@ export default function Footer() {
               Trusted jewellers since 1985. Crafting timeless pieces in gold, diamond and silver for every occasion.
             </p>
             <div className="flex gap-4 text-[#a7a0a9]">
-              <span>Instagram</span>
-              <span>YouTube</span>
+              <a href="https://www.instagram.com/soni_jewellers_delhi/?hl=en" target="_blank" rel="noopener noreferrer" className="hover:text-white">Instagram</a>
+              <a href="https://www.youtube.com/@sonijewellersdelhi1999" target="_blank" rel="noopener noreferrer" className="hover:text-white">YouTube</a>
             </div>
           </div>
 
@@ -48,8 +48,8 @@ export default function Footer() {
         <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-[#343138] pt-6 text-sm text-[#78727c]">
           <span>© 2026 Soni Jewellers. All rights reserved.</span>
           <div className="flex gap-6">
-            <span>Privacy Policy</span>
-            <span>Terms of Service</span>
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
           </div>
         </div>
       </div>

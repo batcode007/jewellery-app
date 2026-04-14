@@ -40,12 +40,14 @@ export default function Header() {
             Gold 22K: ₹{rates?.gold_22k?.toLocaleString("en-IN") ?? "--"}/g &nbsp;|&nbsp; Silver: ₹{rates?.silver?.toLocaleString("en-IN") ?? "--"}/g
           </span>
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/stores" className="text-[13px] text-text-cream hover:underline">
+            {/* Track Order — coming soon */}
+            {/* <Link href="/stores" className="text-[13px] text-text-cream hover:underline">
               Track Order
-            </Link>
-            <Link href="/stores" className="text-[13px] text-text-cream hover:underline">
+            </Link> */}
+            {/* Help & Support — coming soon */}
+            {/* <Link href="/stores" className="text-[13px] text-text-cream hover:underline">
               Help &amp; Support
-            </Link>
+            </Link> */}
           </div>
         </div>
 
