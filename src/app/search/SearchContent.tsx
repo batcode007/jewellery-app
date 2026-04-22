@@ -10,6 +10,7 @@ import type { Item } from "@/lib/supabase";
 import { useWishlist } from "@/hooks/useWishlist";
 import Toast from "@/components/Toast";
 import EmptyState from "@/components/EmptyState";
+import { fmtWeight } from "@/lib/formatSpecs";
 
 const PAGE_SIZE = 12;
 
@@ -181,7 +182,7 @@ export default function SearchContent() {
                         {item.metals?.name && (
                           <span className="text-xs rounded bg-bg-gold-light text-text-gold px-2 py-0.5 font-medium">{item.metals.name}</span>
                         )}
-                        <span className="text-xs text-text-muted">{item.weight}</span>
+                        <span className="text-xs text-text-muted">{fmtWeight(item.weight)}</span>
                       </div>
                       <span className="text-[15px] font-bold text-text-primary">{item.price_display}</span>
                     </div>

@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, Heart, Check } from "lucide-react";
 import { getItemById, getItems } from "@/lib/api";
+import { fmtWeight, fmtPurity } from "@/lib/formatSpecs";
 import type { Item } from "@/lib/supabase";
 import { useWishlist } from "@/hooks/useWishlist";
 import Toast from "@/components/Toast";
@@ -65,8 +66,8 @@ export default function ProductDetailPage() {
 
   const specs = [
     { label: "Material", value: metalName || "—" },
-    { label: "Weight", value: item.weight || "—" },
-    { label: "Purity", value: item.purity || "—" },
+    { label: "Weight (g)", value: fmtWeight(item.weight) },
+    { label: "Purity (kt / fineness)", value: fmtPurity(item.purity) },
     { label: "Category", value: typeName || "—" },
   ];
 

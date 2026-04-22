@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import type { Item } from "@/lib/supabase";
 import Viewer360 from "./Viewer360";
+import { fmtWeight, fmtPurity } from "@/lib/formatSpecs";
 
 export default function ItemDetailModal({
   item,
@@ -171,12 +172,12 @@ export default function ItemDetailModal({
 
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div className="bg-gray-50 p-3 rounded-lg">
-                <div className="text-[11px] text-gray-400">Weight</div>
-                <div className="text-sm font-semibold text-navy">{item.weight}</div>
+                <div className="text-[11px] text-gray-400">Weight (grams)</div>
+                <div className="text-sm font-semibold text-navy">{fmtWeight(item.weight)}</div>
               </div>
               <div className="bg-gray-50 p-3 rounded-lg">
-                <div className="text-[11px] text-gray-400">Purity</div>
-                <div className="text-sm font-semibold text-navy">{item.purity}</div>
+                <div className="text-[11px] text-gray-400">Purity (carats / fineness)</div>
+                <div className="text-sm font-semibold text-navy">{fmtPurity(item.purity)}</div>
               </div>
             </div>
 

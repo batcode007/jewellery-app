@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Heart } from "lucide-react";
 import type { Item } from "@/lib/supabase";
 import { useWishlist } from "@/hooks/useWishlist";
+import { fmtWeight, fmtPurity } from "@/lib/formatSpecs";
 
 export default function ItemCard({
   item,
@@ -80,7 +81,7 @@ export default function ItemCard({
             {item.name}
           </div>
           <div className="mt-2 text-xs uppercase tracking-[0.18em] text-gray-300">
-            {item.weight} • {item.purity}
+            {fmtWeight(item.weight)} • {fmtPurity(item.purity)}
           </div>
         </div>
       </div>

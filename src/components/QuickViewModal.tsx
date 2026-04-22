@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ShoppingBag, Heart, X } from "lucide-react";
 import ModalBackdrop from "./ModalBackdrop";
 import type { Item } from "@/lib/supabase";
+import { fmtWeight, fmtPurity } from "@/lib/formatSpecs";
 
 interface QuickViewModalProps {
   item: Item | null;
@@ -51,7 +52,7 @@ export default function QuickViewModal({ item, open, onClose, onWishlist, inWish
           </div>
 
           <h2 className="font-serif text-xl text-text-primary">{item.name}</h2>
-          <span className="text-[13px] text-text-muted">{item.weight} · {item.purity}</span>
+          <span className="text-[13px] text-text-muted">{fmtWeight(item.weight)} · {fmtPurity(item.purity)}</span>
           <span className="text-[22px] font-bold text-text-primary">{item.price_display}</span>
 
           {item.description && (

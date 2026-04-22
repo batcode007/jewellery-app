@@ -9,6 +9,7 @@ import type { Item } from "@/lib/supabase";
 import { useWishlist } from "@/hooks/useWishlist";
 import EmptyState from "@/components/EmptyState";
 import Toast from "@/components/Toast";
+import { fmtWeight } from "@/lib/formatSpecs";
 
 export default function WishlistPage() {
   const { ids, toggle } = useWishlist();
@@ -92,7 +93,7 @@ export default function WishlistPage() {
                     {item.name}
                   </Link>
                   <span className="text-[13px] text-text-secondary">
-                    {item.metals?.name ?? ""}{item.weight ? ` · ${item.weight}` : ""}
+                    {item.metals?.name ?? ""}{item.weight ? ` · ${fmtWeight(item.weight)}` : ""}
                   </span>
                   <span className="text-lg font-bold text-text-primary">{item.price_display}</span>
                   <button

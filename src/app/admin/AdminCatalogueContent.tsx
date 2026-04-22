@@ -55,12 +55,13 @@ export default function AdminCatalogueContent() {
     if (!rates || !weightGrams || !purity) return "";
     const w = parseFloat(weightGrams);
     if (isNaN(w) || w <= 0) return "";
-    const p = purity.toUpperCase().replace(/\s/g, "");
+    // normalise: "22 kt" → "22K", "22KT" → "22K", "22K" → "22K"
+    const p = purity.toUpperCase().replace(/\s/g, "").replace(/KT$/, "K");
     let ratePerTenG: number | null = null;
     if (p === "24K") ratePerTenG = rates.gold_24k;
     else if (p === "22K") ratePerTenG = rates.gold_22k;
     else if (p === "18K") ratePerTenG = rates.gold_18k;
-    else if (p === "925" || p === "SILVER") ratePerTenG = rates.silver * 10;
+    else if (p === "925" || p === "999" || p === "SILVER") ratePerTenG = rates.silver * 10;
     if (!ratePerTenG) return "";
     return String(Math.round((ratePerTenG / 10) * w));
   }
@@ -368,9 +369,11 @@ export default function AdminCatalogueContent() {
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-gray-600 mb-1 block">Purity</label>
+                    <label className="text-xs font-medium text-gray-600 mb-1 block">
+                      Purity <span className="text-gray-400 font-normal">(kt for gold · fineness for silver)</span>
+                    </label>
                     <input
-                      placeholder="e.g. 22K, 18K, 925"
+                      placeholder="e.g. 22 kt, 18 kt, 925, 999"
                       value={form.purity}
                       onChange={(e) => {
                         const purity = e.target.value;
@@ -382,30 +385,25 @@ export default function AdminCatalogueContent() {
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-gray-600 mb-1 block">Weight (display)</label>
-                    <input
-                      placeholder="e.g. 4.2g"
-                      value={form.weight}
-                      onChange={(e) => setForm({ ...form, weight: e.target.value })}
-                      className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:border-gold transition-colors"
-                    />
-                  </div>
-                  <div className="col-span-2">
-                    <label className="text-xs font-medium text-gray-600 mb-1 block">
-                      Weight in grams <span className="text-gray-400 font-normal">(for price calc)</span>
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="e.g. 4.2"
-                      value={form.weight_grams}
-                      onChange={(e) => {
-                        const weight_grams = e.target.value;
-                        const computed = computePrice(weight_grams, form.purity);
-                        setForm({ ...form, weight_grams, ...(computed ? { price: computed } : {}) });
-                        if (computed) setPriceAutoCalc(true);
-                      }}
-                      className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm outline-none focus:border-gold transition-colors"
-                    />
+                    <label className="text-xs font-medium text-gray-600 mb-1 block">Weight</label>
+                    <div className="flex items-center rounded-lg border border-gray-200 focus-within:border-gold transition-colors overflow-hidden">
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        placeholder="e.g. 4.2"
+                        value={form.weight_grams}
+                        onChange={(e) => {
+                          const weight_grams = e.target.value;
+                          const weight = weight_grams ? `${weight_grams} g` : "";
+                          const computed = computePrice(weight_grams, form.purity);
+                          setForm({ ...form, weight_grams, weight, ...(computed ? { price: computed } : {}) });
+                          if (computed) setPriceAutoCalc(true);
+                        }}
+                        className="flex-1 px-3 py-2.5 text-sm outline-none bg-white"
+                      />
+                      <span className="px-3 py-2.5 text-sm font-medium text-gray-400 bg-gray-50 border-l border-gray-200 select-none">g</span>
+                    </div>
                   </div>
                 </div>
               </section>
